@@ -26,6 +26,10 @@ If the user specifically asks about wallet backup or recovery material, also use
 If the user asks to create a wallet:
 - If the user wants to continue an existing wallet setup, check `nunchuk sandbox list` first.
 - Do not inspect auth status, config, network, or existing finalized wallets first unless the user asked for that or the create command fails.
+- If the user does not specify the wallet structure, ask what setup they want, such as `2-of-3` or `2-of-4`.
+- Ask whether they want Platform key policies such as spending limits, signing delay, or auto-broadcast.
+- Ask whether they want an extra key for recovery or robustness.
+- When adding keys, ask whether they want to use a key on this device or add a key from Nunchuk mobile/desktop app, another signer, or a hardware wallet.
 - If the user did not specify an address type, use `NATIVE_SEGWIT`.
 - If the user did not provide a name, use a simple placeholder like `"My Wallet"`.
 
