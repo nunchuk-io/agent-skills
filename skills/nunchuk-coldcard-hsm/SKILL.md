@@ -102,6 +102,23 @@ Unrestricted `policy.json`:
 }
 ```
 
+Example limited `policy.json`:
+```json
+{
+  "notes": "Office wallet policy",
+  "never_log": true,
+  "period": 1440,
+  "rules": [
+    {
+      "max_amount": 1000000,
+      "per_period": 5000000
+    }
+  ]
+}
+```
+
+This example allows up to `0.01 BTC` per transaction and `0.05 BTC` per 24 hours.
+
 For a custom policy, read `references/coldcard-hsm-rules.md` first.
 
 ## HSM users
