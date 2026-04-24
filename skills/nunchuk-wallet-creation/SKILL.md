@@ -128,12 +128,18 @@ Meaning:
 
 `after(n)` is an absolute timelock:
 - it uses Bitcoin's absolute locktime rules
+- valid values are `1` through `2147483647` (`2^31 - 1`)
 - if `n < 500000000`, Bitcoin interprets it as a block height
 - if `n >= 500000000`, Bitcoin interprets it as a UNIX timestamp in seconds
+- if `n >= 2147483648`, the value is invalid because it exceeds the `2^31 - 1` limit, even if it looks like a future UNIX timestamp
 
 Examples:
 - `after(840000)` means the path is valid once chain height reaches block `840000`; it does not mean `840000` seconds
 - `after(1735689600)` means the path is valid once chain time reaches `2025-01-01 00:00:00 UTC`
+- `after(2147483647)` is the latest valid timestamp lock and means `2038-01-19 03:14:07 UTC`
+- `after(2208988800)` is invalid because `2208988800` means `2040-01-01 00:00:00 UTC`
+- For a calendar target beyond `2038-01-19 03:14:07 UTC`, use a height lock instead: get the current height with `nunchuk network tip`, estimate the target height, and use `after(<target-height>)`
+- Height locks are approximate calendar time because block intervals vary; estimate with the current height plus roughly `144` blocks per day
 
 `older(n)` is a relative timelock enforced through input sequence:
 - it uses Bitcoin's relative locktime rules from `OP_CHECKSEQUENCEVERIFY`
