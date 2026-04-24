@@ -16,11 +16,58 @@ Progress:
 
 If the user explicitly asks for only sign, only broadcast, or only inspect, do only that step.
 
+## What Miniscript Signing Path Means
+
+A Miniscript wallet can have multiple valid spending branches.
+
+The active signing path determines:
+- which signers are required
+- whether a locktime is required
+- whether a sequence value is required
+- whether one or more hash preimages are required
+
+Use `nunchuk miniscript inspect` to view the possible policy paths before spending, or when reviewing a template before wallet creation:
+```bash
+nunchuk miniscript inspect --wallet <wallet-id>
+nunchuk miniscript inspect --descriptor "wsh(...)"
+nunchuk miniscript inspect --miniscript "multi(2,key_0_0,key_1_0,key_2_0)"
+nunchuk miniscript inspect --miniscript "or_d(multi(2,key_0_0,key_1_0,key_2_0),and_v(v:pk(key_3_0),after(1735689600)))"
+```
+
+Use `--locktime` and `--sequence` when you need to know which path is currently satisfiable:
+```bash
+nunchuk miniscript inspect --wallet <wallet-id> --locktime 1735689600 --sequence 144
+```
+
+Use `nunchuk tx get` to inspect the live transaction-selected path:
+```bash
+nunchuk tx get --wallet <wallet-id> --tx-id <tx-id>
+```
+
+`tx get` can show:
+- `Required signers`
+- `Locktime`
+- `Sequence`
+- `Hash preimages`
+- `Path signers`
+
+`READY_TO_BROADCAST` depends on the selected Miniscript path being fully satisfied, not on wallet `m-of-n` alone.
+
 ## Create
 
 Create a transaction:
 ```bash
 nunchuk tx create --wallet <wallet-id> --to <address> --amount <satoshis>
+```
+
+For Miniscript, choose a specific path if needed:
+```bash
+nunchuk tx create --wallet <wallet-id> --to <address> --amount 100000 --miniscript-path 0
+```
+
+For Miniscript, attach required preimages when the selected path needs them:
+```bash
+nunchuk tx create --wallet <wallet-id> --to <address> --amount 100000 --preimage <32-byte-hex>
 ```
 
 ## Sign
@@ -33,6 +80,11 @@ nunchuk tx sign --wallet <wallet-id> --tx-id <tx-id>
 Sign with a specific stored key:
 ```bash
 nunchuk tx sign --wallet <wallet-id> --tx-id <tx-id> --fingerprint <xfp>
+```
+
+Attach Miniscript preimages while signing:
+```bash
+nunchuk tx sign --wallet <wallet-id> --tx-id <tx-id> --preimage <32-byte-hex>
 ```
 
 Merge an externally signed PSBT:
@@ -95,4 +147,6 @@ nunchuk tx sign --wallet <wallet-id> --tx-id <tx-id> --psbt <signed-psbt-base64>
 
 - `tx sign` skips keys that already signed the PSBT.
 - `tx sign --psbt` cannot be used with `--xprv` or `--fingerprint`.
+- `--preimage <32-byte-hex>` is required when the chosen Miniscript branch includes hash locks.
+- `--miniscript-path <index>` is for choosing a specific branch when the user does not want the default satisfiable path selection.
 - `tx broadcast` requires a fully signed transaction, status is `READY_TO_BROADCAST`.
