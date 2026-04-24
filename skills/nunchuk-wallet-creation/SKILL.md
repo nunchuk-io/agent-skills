@@ -67,6 +67,144 @@ nunchuk sandbox create --name "My Wallet" \
   --address-type NATIVE_SEGWIT
 ```
 
+## Add keys
+
+Generate a software key on this device and add it by fingerprint to a multisig slot:
+```bash
+nunchuk key generate --name "My key"
+nunchuk sandbox add-key <sandbox-id> --slot 0 --fingerprint <xfp>
+```
+
+Reuse an existing software key on this device:
+```bash
+nunchuk key list
+nunchuk sandbox add-key <sandbox-id> --slot 0 --fingerprint <xfp>
+```
+
+Add a local software key to a Miniscript slot:
+```bash
+nunchuk key list
+nunchuk sandbox add-key <sandbox-id> --slot key_0_0 --fingerprint <xfp>
+```
+
+Add key with structured fields:
+```bash
+nunchuk sandbox add-key <sandbox-id> --slot 0 \
+  --fingerprint "1a2b3c4d" \
+  --xpub "xpub..." \
+  --path "m/48h/0h/0h/2h"
+```
+
+Add key with a descriptor:
+```bash
+nunchuk sandbox add-key <sandbox-id> --slot key_1_0 \
+  --descriptor "[1a2b3c4d/48h/0h/0h/2h]xpub..."
+```
+
+For Miniscript, `--slot` uses signer names from the template such as `key_0_0` or `key_3_0`.
+
+## Check, sync, and finalize
+
+Check sandbox state:
+```bash
+nunchuk sandbox get <sandbox-id>
+```
+
+Enable platform key for multisig:
+```bash
+nunchuk sandbox platform-key enable <sandbox-id>
+```
+
+Enable platform key for Miniscript:
+```bash
+nunchuk sandbox platform-key enable <sandbox-id> --slot key_3_0
+```
+
+For Platform key behavior and policy examples, also use `nunchuk-platform-key`.
+
+Set a global Platform key policy:
+```bash
+# Auto-broadcast, max 1000 USD per day.
+nunchuk sandbox platform-key set-policy <sandbox-id> \
+  --auto-broadcast --limit-amount 1000 --limit-currency USD --limit-interval DAILY
+```
+
+Set a per-key Platform key policy:
+```bash
+# Only for signer 1a2b3c4d, with auto-broadcast, a 1h delay, and unlimited spending.
+nunchuk sandbox platform-key set-policy <sandbox-id> \
+  --signer 1a2b3c4d --auto-broadcast --signing-delay 1h
+```
+
+Finalize:
+```bash
+nunchuk sandbox finalize <sandbox-id>
+nunchuk wallet address get <wallet-id>
+nunchuk wallet export <wallet-id> > wallet-backup.txt
+```
+
+Important sync states:
+- `ADDED` means a slot is known filled remotely, but this device has not synced the full signer descriptor yet.
+- `sandbox get` can sync encrypted sandbox state for other participants.
+- If finalize says other devices need to come online briefly, run `nunchuk sandbox get <sandbox-id>` and retry after the other devices sync.
+- If `sandbox get` shows `status: ACTIVE`, run `nunchuk sandbox finalize <sandbox-id>` to create the local wallet record.
+
+## Examples
+
+Create a plain 2-of-3 multisig wallet:
+```bash
+nunchuk sandbox create --name "My Wallet" --m 2 --n 3 --address-type NATIVE_SEGWIT
+```
+
+Create a wallet and use a software key stored on this device:
+```bash
+nunchuk sandbox create --name "My Wallet" --m 2 --n 3 --address-type NATIVE_SEGWIT
+nunchuk key generate
+nunchuk sandbox add-key <sandbox-id> --slot 0 --fingerprint <xfp>
+```
+
+Create a 2-of-3 wallet with a `100 USD` daily Platform key spending limit:
+```bash
+nunchuk sandbox create --name "My Wallet" --m 2 --n 3 --address-type NATIVE_SEGWIT
+nunchuk sandbox platform-key enable <sandbox-id>
+nunchuk sandbox platform-key set-policy <sandbox-id> \
+  --limit-amount 100 --limit-currency USD --limit-interval DAILY
+```
+
+Create a 2-of-3 wallet with a `100 USD` daily spending limit and auto-broadcast:
+```bash
+nunchuk sandbox create --name "My Wallet" --m 2 --n 3 --address-type NATIVE_SEGWIT
+nunchuk sandbox platform-key enable <sandbox-id>
+nunchuk sandbox platform-key set-policy <sandbox-id> \
+  --auto-broadcast \
+  --limit-amount 100 --limit-currency USD --limit-interval DAILY
+```
+
+Create a 2-of-3 wallet with a `24-hour` Platform key signing delay, unlimited spending:
+```bash
+nunchuk sandbox create --name "My Wallet" --m 2 --n 3 --address-type NATIVE_SEGWIT
+nunchuk sandbox platform-key enable <sandbox-id>
+nunchuk sandbox platform-key set-policy <sandbox-id> \
+  --signing-delay 24h
+```
+
+Create a Miniscript wallet using one of the templates from `Miniscript template examples` below:
+```bash
+nunchuk sandbox create --name "My Wallet" \
+  --miniscript-template "multi(2,key_0_0,key_1_0,key_2_0)" \
+  --address-type NATIVE_SEGWIT
+```
+
+Create a Miniscript 2-of-3 wallet with a 100 USD daily Platform key spending limit:
+```bash
+nunchuk sandbox create --name "My Wallet" \
+  --miniscript-template "or_d(multi(2,key_0_0,key_1_0,key_2_0),and_v(v:pk(key_3_0),after(1735689600)))" \
+  --address-type NATIVE_SEGWIT
+nunchuk sandbox platform-key enable <sandbox-id> --slot key_3_0
+nunchuk sandbox platform-key set-policy <sandbox-id> \
+  --limit-amount 100 --limit-currency USD --limit-interval DAILY
+```
+
 ## Miniscript template examples
 
 Simple 2-of-3:
@@ -156,139 +294,6 @@ Examples:
 - `older(86400)` does not mean one day; for time-based relative locks the number must already be BIP68-encoded
 
 For static signing-path inspection or satisfiability checks, use `nunchuk-wallet-transactions`.
-
-## Add keys
-
-Generate a software key on this device and add it by fingerprint to a multisig slot:
-```bash
-nunchuk key generate --name "My key"
-nunchuk sandbox add-key <sandbox-id> --slot 0 --fingerprint <xfp>
-```
-
-Reuse an existing software key on this device:
-```bash
-nunchuk key list
-nunchuk sandbox add-key <sandbox-id> --slot 0 --fingerprint <xfp>
-```
-
-Add a local software key to a Miniscript slot:
-```bash
-nunchuk key list
-nunchuk sandbox add-key <sandbox-id> --slot key_0_0 --fingerprint <xfp>
-```
-
-Add key with structured fields:
-```bash
-nunchuk sandbox add-key <sandbox-id> --slot 0 \
-  --fingerprint "1a2b3c4d" \
-  --xpub "xpub..." \
-  --path "m/48h/0h/0h/2h"
-```
-
-Add key with a descriptor:
-```bash
-nunchuk sandbox add-key <sandbox-id> --slot key_1_0 \
-  --descriptor "[1a2b3c4d/48h/0h/0h/2h]xpub..."
-```
-
-For Miniscript, `--slot` uses signer names from the template such as `key_0_0` or `key_3_0`.
-
-## Check, sync, and finalize
-
-Check sandbox state:
-```bash
-nunchuk sandbox get <sandbox-id>
-```
-
-Enable platform key:
-```bash
-nunchuk sandbox platform-key enable <sandbox-id>
-```
-
-For Platform key behavior and policy examples, also use `nunchuk-platform-key`.
-
-Set a global Platform key policy:
-```bash
-# Auto-broadcast, max 1000 USD per day.
-nunchuk sandbox platform-key set-policy <sandbox-id> \
-  --auto-broadcast --limit-amount 1000 --limit-currency USD --limit-interval DAILY
-```
-
-Set a per-key Platform key policy:
-```bash
-# Only for signer 1a2b3c4d, with auto-broadcast, a 1h delay, and unlimited spending.
-nunchuk sandbox platform-key set-policy <sandbox-id> \
-  --signer 1a2b3c4d --auto-broadcast --signing-delay 1h
-```
-
-Finalize:
-```bash
-nunchuk sandbox finalize <sandbox-id>
-nunchuk wallet address get <wallet-id>
-nunchuk wallet export <wallet-id> > wallet-backup.txt
-```
-
-Important sync states:
-- `ADDED` means a slot is known filled remotely, but this device has not synced the full signer descriptor yet.
-- `sandbox get` can sync encrypted sandbox state for other participants.
-- If finalize says other devices need to come online briefly, run `nunchuk sandbox get <sandbox-id>` and retry after the other devices sync.
-- If `sandbox get` shows `status: ACTIVE`, run `nunchuk sandbox finalize <sandbox-id>` to create the local wallet record.
-
-## Examples
-
-Create a plain 2-of-3 multisig wallet:
-```bash
-nunchuk sandbox create --name "My Wallet" --m 2 --n 3 --address-type NATIVE_SEGWIT
-```
-
-Create a wallet and use a software key stored on this device:
-```bash
-nunchuk sandbox create --name "My Wallet" --m 2 --n 3 --address-type NATIVE_SEGWIT
-nunchuk key generate
-nunchuk sandbox add-key <sandbox-id> --slot 0 --fingerprint <xfp>
-```
-
-Create a 2-of-3 wallet with a `100 USD` daily Platform key spending limit:
-```bash
-nunchuk sandbox create --name "My Wallet" --m 2 --n 3 --address-type NATIVE_SEGWIT
-nunchuk sandbox platform-key enable <sandbox-id>
-nunchuk sandbox platform-key set-policy <sandbox-id> \
-  --limit-amount 100 --limit-currency USD --limit-interval DAILY
-```
-
-Create a 2-of-3 wallet with a `100 USD` daily spending limit and auto-broadcast:
-```bash
-nunchuk sandbox create --name "My Wallet" --m 2 --n 3 --address-type NATIVE_SEGWIT
-nunchuk sandbox platform-key enable <sandbox-id>
-nunchuk sandbox platform-key set-policy <sandbox-id> \
-  --auto-broadcast \
-  --limit-amount 100 --limit-currency USD --limit-interval DAILY
-```
-
-Create a 2-of-3 wallet with a `24-hour` Platform key signing delay, unlimited spending:
-```bash
-nunchuk sandbox create --name "My Wallet" --m 2 --n 3 --address-type NATIVE_SEGWIT
-nunchuk sandbox platform-key enable <sandbox-id>
-nunchuk sandbox platform-key set-policy <sandbox-id> \
-  --signing-delay 24h
-```
-
-Create a Miniscript wallet using one of the templates from `Miniscript template examples` above:
-```bash
-nunchuk sandbox create --name "My Wallet" \
-  --miniscript-template "<template-from-above>" \
-  --address-type NATIVE_SEGWIT
-```
-
-Create a Miniscript 2-of-3 wallet with a 100 USD daily Platform key spending limit:
-```bash
-nunchuk sandbox create --name "My Wallet" \
-  --miniscript-template "or_d(multi(2,key_0_0,key_1_0,key_2_0),and_v(v:pk(key_3_0),after(1735689600)))" \
-  --address-type NATIVE_SEGWIT
-nunchuk sandbox platform-key enable <sandbox-id> --slot key_3_0
-nunchuk sandbox platform-key set-policy <sandbox-id> \
-  --limit-amount 100 --limit-currency USD --limit-interval DAILY
-```
 
 ## Defaults
 
