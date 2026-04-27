@@ -312,7 +312,7 @@ For static signing-path inspection or satisfiability checks, use `nunchuk-wallet
 - `key generate` stores the software key on the current device for the current user and network.
 - `sandbox add-key --fingerprint <xfp>` is the simplest way to use a locally stored software key.
 - For hardware keys, HWI can help export a descriptor to add here: https://github.com/bitcoin-core/HWI/releases
-- Miniscript support requires `nunchuk-cli >= 0.1.1`.
+- Miniscript support requires `nunchuk-cli >= 0.1.2`.
 - Miniscript support is currently `NATIVE_SEGWIT` only. Taproot Miniscript is not supported here.
 - Finalize only after every required slot is filled and synced.
 - Accounts may have a limit on wallets or sandboxes. If creation fails because of that, ask whether to delete unused wallets or sandboxes, and only run delete after the user confirms.
