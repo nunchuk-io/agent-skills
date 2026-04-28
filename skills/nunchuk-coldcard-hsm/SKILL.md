@@ -25,13 +25,13 @@ Progress:
 - Enroll it on the Coldcard with `ckcc upload <descriptor-file> --miniscript`.
 - Sign a transaction with `nunchuk tx get --wallet <wallet-id> --tx-id <txid> --json | jq -r .psbt > <txid.psbt>`, `ckcc sign --base64 <txid.psbt>`, and `nunchuk tx sign --psbt <signed-psbt-base64>`.
 
-Export a mainnet multisig account descriptor:
+Export a mainnet account descriptor:
 ```bash
 ckcc xpub -v "m/48'/0'/0'/2'"
 nunchuk sandbox add-key <sandbox-id> --slot 0 --descriptor "[xfp/48h/0h/0h/2h]xpub..."
 ```
 
-Export a testnet multisig account descriptor:
+Export a testnet account descriptor:
 ```bash
 ckcc xpub -v "m/48'/1'/0'/2'"
 nunchuk sandbox add-key <sandbox-id> --slot 0 --descriptor "[xfp/48h/1h/0h/2h]tpub..."

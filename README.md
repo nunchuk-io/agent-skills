@@ -44,6 +44,7 @@ nunchuk auth login
 | [nunchuk-wallet-creation](./skills/nunchuk-wallet-creation/SKILL.md) | Create wallets, add keys, and finalize |
 | [nunchuk-invitations](./skills/nunchuk-invitations/SKILL.md) | Invite people to wallets and manage invitations |
 | [nunchuk-platform-key](./skills/nunchuk-platform-key/SKILL.md) | Configure and inspect Platform key policies on sandboxes and wallets |
+| [nunchuk-coldcard-hsm](./skills/nunchuk-coldcard-hsm/SKILL.md) | Add Coldcard keys, enroll wallets, and sign with Coldcard including HSM mode |
 | [nunchuk-wallet-management](./skills/nunchuk-wallet-management/SKILL.md) | List, inspect, export, rename, recover, and delete finalized wallets |
 | [nunchuk-wallet-transactions](./skills/nunchuk-wallet-transactions/SKILL.md) | Create, sign, inspect, list, and broadcast wallet transactions |
 
@@ -71,6 +72,10 @@ Create a 2-of-3 wallet with a 100 USD daily spending limit and auto-broadcast
 
 ```text
 Create a 2-of-3 wallet with a 24-hour signing delay
+```
+
+```text
+Create a wallet with Coldcard in HSM mode
 ```
 
 ```text
