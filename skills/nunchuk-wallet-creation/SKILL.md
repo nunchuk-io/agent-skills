@@ -254,6 +254,27 @@ Meaning:
   - the remaining `169` means `169` units of `512` seconds
   - `169 * 512 = 86528` seconds, which is about `24 hours 1 minute 28 seconds`
 
+3-of-4 that becomes 2-of-4 after 2 years and 1-of-4 after 5 years:
+```text
+thresh(3,pk(key_0_0),s:pk(key_1_0),s:pk(key_2_0),s:pk(key_3_0),sln:after(1842652800),sln:after(1937260800))
+```
+Meaning:
+- Before `2028-05-23 00:00:00 UTC`, any 3 of the 4 keys can spend.
+- After `1842652800`, any 2 of the 4 keys can spend.
+- After `1937260800`, any 1 of the 4 keys can spend.
+- These are fixed absolute UTC timestamps.
+
+3-of-4 that becomes 2-of-4 six months after funds arrive and 1-of-4 after one year:
+```text
+thresh(3,pk(key_0_0),s:pk(key_1_0),s:pk(key_2_0),s:pk(key_3_0),sln:older(4225186),sln:older(4255898))
+```
+Meaning:
+- Immediately after funds arrive, any 3 of the 4 keys can spend.
+- After the UTXO is about 183 days old, any 2 of the 4 keys can spend.
+- After the UTXO is about 365 days old, any 1 of the 4 keys can spend.
+- `older(...)` values are raw BIP68 sequence values, not seconds.
+- For separate signer sets at each stage, an explicit `or_d(...or_i(...))` branch script can model that, but it is more verbose.
+
 2-of-3 with a hash-preimage branch:
 ```text
 or_d(multi(2,key_0_0,key_1_0,key_2_0),and_v(v:pk(key_3_0),sha256(2222222222222222222222222222222222222222222222222222222222222222)))
