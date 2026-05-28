@@ -60,6 +60,14 @@ Read `references/bip-0379.md` when you need more Miniscript background, extra fr
 
 Miniscript sandboxes currently support `NATIVE_SEGWIT` only.
 
+Use the bundled Miniscript helper when translating a spending policy into a template:
+```bash
+node scripts/miniscript.js compile 'thresh(2,pk(key_0_0),pk(key_1_0),pk(key_2_0))'
+node scripts/miniscript.js analyze 'multi(2,key_0_0,key_1_0,key_2_0)'
+```
+
+Use `compile` for policy expressions and `analyze` for already-typed Miniscript. Verify the final template with `nunchuk miniscript inspect --miniscript "<template>"` before creating a wallet.
+
 Create a Miniscript sandbox:
 ```bash
 nunchuk sandbox create --name "My Wallet" \
