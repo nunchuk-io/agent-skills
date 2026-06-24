@@ -32,7 +32,7 @@ If the user asks to create a wallet:
 - Ask whether they want Platform key policies such as spending limits, signing delay, or auto-broadcast.
 - Ask whether they want an extra key for recovery or robustness.
 - When adding keys, ask whether they want to use a key on this device or add a key from Nunchuk mobile/desktop app, another signer, or a hardware wallet.
-- If the user did not specify an address type, use `NATIVE_SEGWIT`.
+- If the user did not specify an address type, use `NATIVE_SEGWIT`. Use `TAPROOT` when the user asks for Taproot.
 - If the user did not provide a name, use a simple placeholder like `"My Wallet"`.
 
 ## Multisig create
@@ -40,6 +40,11 @@ If the user asks to create a wallet:
 Create a plain multisig sandbox:
 ```bash
 nunchuk sandbox create --name "My Wallet" --m 2 --n 3 --address-type NATIVE_SEGWIT
+```
+
+Create a Taproot multisig sandbox:
+```bash
+nunchuk sandbox create --name "My Taproot Wallet" --m 2 --n 3 --address-type TAPROOT
 ```
 
 Join:
@@ -58,7 +63,7 @@ If the user asks which Miniscript path is satisfiable, what a signing path means
 
 Read `references/bip-0379.md` when you need more Miniscript background, extra fragment patterns, or terminology.
 
-Miniscript sandboxes currently support `NATIVE_SEGWIT` only.
+Miniscript sandboxes support `NATIVE_SEGWIT` and `TAPROOT`.
 
 Use the bundled Miniscript helper when designing or reviewing a non-trivial policy:
 ```bash
@@ -66,13 +71,20 @@ scripts/miniscript.js compile 'thresh(2,pk(key_0_0),pk(key_1_0),pk(key_2_0))'
 scripts/miniscript.js analyze 'multi(2,key_0_0,key_1_0,key_2_0)'
 ```
 
-Use `compile` for policy expressions and `analyze` for already-typed Miniscript. The helper prints spending cost analysis and script structure, which can help compare candidate policies before choosing a template. Before creating a wallet, review the final template with `scripts/miniscript.js analyze "<template>"` and verify Nunchuk signing paths with `nunchuk miniscript inspect --miniscript "<template>"`.
+Use `compile` for policy expressions and `analyze` for already-typed Miniscript. The helper prints spending cost analysis and script structure, which can help compare candidate policies before choosing a template. Before creating a wallet, review the final template with `scripts/miniscript.js analyze "<template>"` and verify Nunchuk signing paths with `nunchuk miniscript inspect --miniscript "<template>"`; add `--address-type TAPROOT` for Taproot Miniscript.
 
 Create a Miniscript sandbox:
 ```bash
 nunchuk sandbox create --name "My Wallet" \
   --miniscript-template "multi(2,key_0_0,key_1_0,key_2_0)" \
   --address-type NATIVE_SEGWIT
+```
+
+Create a Taproot Miniscript sandbox:
+```bash
+nunchuk sandbox create --name "My Taproot Miniscript Wallet" \
+  --miniscript-template "multi_a(2,key_0_0,key_1_0,key_2_0)" \
+  --address-type TAPROOT
 ```
 
 ## Add keys
@@ -203,6 +215,13 @@ nunchuk sandbox create --name "My Wallet" \
   --address-type NATIVE_SEGWIT
 ```
 
+Create a Taproot Miniscript wallet:
+```bash
+nunchuk sandbox create --name "My Taproot Miniscript Wallet" \
+  --miniscript-template "multi_a(2,key_0_0,key_1_0,key_2_0)" \
+  --address-type TAPROOT
+```
+
 Create a Miniscript 2-of-3 wallet with a 100 USD daily Platform key spending limit:
 ```bash
 nunchuk sandbox create --name "My Wallet" \
@@ -327,6 +346,8 @@ For static signing-path inspection or satisfiability checks, use `nunchuk-wallet
 ## Defaults
 
 - Use `NATIVE_SEGWIT` by default.
+- Supported multisig address types are `NATIVE_SEGWIT`, `NESTED_SEGWIT`, `LEGACY`, and `TAPROOT`.
+- Miniscript address types are `NATIVE_SEGWIT` and `TAPROOT`; use Tapscript fragments such as `multi_a(...)` for Taproot.
 - Use `--json` for raw machine-readable output.
 - For plain create requests, prefer a single `sandbox create` command over exploratory checks.
 - If the user already has a local software key, use `nunchuk key list` and `sandbox add-key --fingerprint <xfp>` instead of generating a new one.
@@ -342,6 +363,5 @@ For static signing-path inspection or satisfiability checks, use `nunchuk-wallet
 - `sandbox add-key --fingerprint <xfp>` is the simplest way to use a locally stored software key.
 - For hardware keys, HWI can help export a descriptor to add here: https://github.com/bitcoin-core/HWI/releases
 - Miniscript support requires `nunchuk-cli >= 0.1.2`.
-- Miniscript support is currently `NATIVE_SEGWIT` only. Taproot Miniscript is not supported here.
 - Finalize only after every required slot is filled and synced.
 - Accounts may have a limit on wallets or sandboxes. If creation fails because of that, ask whether to delete unused wallets or sandboxes, and only run delete after the user confirms.

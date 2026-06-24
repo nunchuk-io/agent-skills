@@ -31,6 +31,7 @@ Use `nunchuk miniscript inspect` to view the possible policy paths before spendi
 nunchuk miniscript inspect --wallet <wallet-id>
 nunchuk miniscript inspect --descriptor "wsh(...)"
 nunchuk miniscript inspect --miniscript "multi(2,key_0_0,key_1_0,key_2_0)"
+nunchuk miniscript inspect --miniscript "multi_a(2,key_0_0,key_1_0,key_2_0)" --address-type TAPROOT
 nunchuk miniscript inspect --miniscript "or_d(multi(2,key_0_0,key_1_0,key_2_0),and_v(v:pk(key_3_0),after(1735689600)))"
 ```
 
@@ -63,6 +64,12 @@ nunchuk tx create --wallet <wallet-id> --to <address> --amount <satoshis>
 For Miniscript, choose a specific path if needed:
 ```bash
 nunchuk tx create --wallet <wallet-id> --to <address> --amount 100000 --miniscript-path 0
+```
+
+For Taproot wallets, key-path spend is the default when available. Force script-path spend when needed:
+```bash
+nunchuk tx create --wallet <wallet-id> --to <address> --amount 100000 --taproot-script-path
+nunchuk tx create --wallet <wallet-id> --to <address> --amount 100000 --taproot-script-path --miniscript-path 0
 ```
 
 For Miniscript, attach required preimages when the selected path needs them:
@@ -139,6 +146,7 @@ nunchuk tx sign --wallet <wallet-id> --tx-id <tx-id> --psbt <signed-psbt-base64>
 - `tx create` treats `--amount` as satoshis by default.
 - Use `--currency` for fiat or BTC amounts.
 - `tx create` estimates the fee rate automatically.
+- For Taproot wallets, `tx create` uses key-path signing by default when available.
 - If no key option is provided, `tx sign` auto-detects matching stored keys for the wallet and signs with all of them.
 - Use `tx get --json` to retrieve the current pending PSBT before signing externally.
 - Use `--json` when the user needs exact machine-readable output.
@@ -149,4 +157,5 @@ nunchuk tx sign --wallet <wallet-id> --tx-id <tx-id> --psbt <signed-psbt-base64>
 - `tx sign --psbt` cannot be used with `--xprv` or `--fingerprint`.
 - `--preimage <32-byte-hex>` is required when the chosen Miniscript branch includes hash locks.
 - `--miniscript-path <index>` is for choosing a specific branch when the user does not want the default satisfiable path selection.
+- Use `--taproot-script-path` when the user wants to spend a Taproot wallet through a script path instead of the default key path.
 - `tx broadcast` requires a fully signed transaction, status is `READY_TO_BROADCAST`.
