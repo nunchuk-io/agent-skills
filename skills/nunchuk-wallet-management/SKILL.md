@@ -92,6 +92,7 @@ Replacement workflow:
 - Open the replacement sandbox with `sandbox get <group-id>`.
 - Add or replace only the changed signer slots with `sandbox add-key`.
 - Finalize the replacement with `sandbox finalize <group-id>` once every required slot is filled and synced.
+- For Taproot multisig, use `sandbox finalize <group-id> --value-key-set <indexes>` if the user wants to choose the Value Key Set.
 - After finalizing, get a fresh receive address and export a backup if the user wants one.
 
 Create a replacement sandbox:

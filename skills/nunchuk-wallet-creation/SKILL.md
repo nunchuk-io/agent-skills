@@ -170,6 +170,13 @@ nunchuk wallet address get <wallet-id>
 nunchuk wallet export <wallet-id> > wallet-backup.txt
 ```
 
+For Taproot multisig, optionally configure the Value Key Set during finalize. This is the selected
+`m` signer set used for key-path signing to improve privacy and fees. Use comma-separated signer
+slot indexes or 8-hex fingerprints:
+```bash
+nunchuk sandbox finalize <sandbox-id> --value-key-set 0,1
+```
+
 Important sync states:
 - `ADDED` means a slot is known filled remotely, but this device has not synced the full signer descriptor yet.
 - `sandbox get` can sync encrypted sandbox state for other participants.
