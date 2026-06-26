@@ -65,13 +65,20 @@ Read `references/bip-0379.md` when you need more Miniscript background, extra fr
 
 Miniscript sandboxes support `NATIVE_SEGWIT` and `TAPROOT`.
 
-Use the bundled Miniscript helper when designing or reviewing a non-trivial policy:
+For non-trivial `NATIVE_SEGWIT` / P2WSH policies, use the bundled helper:
 ```bash
 scripts/miniscript.js compile 'thresh(2,pk(key_0_0),pk(key_1_0),pk(key_2_0))'
 scripts/miniscript.js analyze 'multi(2,key_0_0,key_1_0,key_2_0)'
 ```
 
-Use `compile` for policy expressions and `analyze` for already-typed Miniscript. The helper prints spending cost analysis and script structure, which can help compare candidate policies before choosing a template. Before creating a wallet, review the final template with `scripts/miniscript.js analyze "<template>"` and verify Nunchuk signing paths with `nunchuk miniscript inspect --miniscript "<template>"`; add `--address-type TAPROOT` for Taproot Miniscript.
+Use `compile` for policies and `analyze` for templates. It prints cost analysis and script structure. Do not use it for Taproot/Tapscript fragments such as `multi_a(...)`.
+
+Before creating a wallet, verify the final template:
+```bash
+scripts/miniscript.js analyze "<native-segwit-template>"
+nunchuk miniscript inspect --miniscript "<native-segwit-template>"
+nunchuk miniscript validate --miniscript "multi_a(2,key_0_0,key_1_0,key_2_0)" --address-type TAPROOT
+```
 
 Create a Miniscript sandbox:
 ```bash
