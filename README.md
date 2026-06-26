@@ -45,7 +45,7 @@ nunchuk auth login
 | [nunchuk-invitations](./skills/nunchuk-invitations/SKILL.md) | Invite people to wallets and manage invitations |
 | [nunchuk-platform-key](./skills/nunchuk-platform-key/SKILL.md) | Configure and inspect Platform key policies on sandboxes and wallets |
 | [nunchuk-coldcard-hsm](./skills/nunchuk-coldcard-hsm/SKILL.md) | Add Coldcard keys, enroll wallets, and sign with Coldcard including HSM mode |
-| [nunchuk-wallet-management](./skills/nunchuk-wallet-management/SKILL.md) | List, inspect, export, rename, recover, and delete finalized wallets |
+| [nunchuk-wallet-management](./skills/nunchuk-wallet-management/SKILL.md) | List, inspect, export, rename, replace, recover, and delete finalized wallets |
 | [nunchuk-wallet-transactions](./skills/nunchuk-wallet-transactions/SKILL.md) | Create, sign, inspect, list, and broadcast wallet transactions |
 
 ## Usage
@@ -60,6 +60,14 @@ Authenticate the nunchuk CLI and switch to testnet
 
 ```text
 Create a 2-of-3 wallet named My Wallet
+```
+
+```text
+Create a Taproot 2-of-3 wallet
+```
+
+```text
+Replace a key in my existing wallet
 ```
 
 ```text

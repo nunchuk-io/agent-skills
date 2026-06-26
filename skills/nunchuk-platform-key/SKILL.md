@@ -14,7 +14,7 @@ It is a secure HSM key managed by Nunchuk.
 
 For multisig wallets, the Platform key can occupy one signer slot.
 
-For Miniscript wallets, the Platform key can be attached to one named signer slot from the Miniscript template.
+For Miniscript wallets, the Platform key can be attached to one or more named signer slots from the Miniscript template.
 
 For example, in a `2-of-3` wallet with two user keys and one Platform key, each transaction still needs 2 signatures. That can be:
 - the user's two own keys
@@ -34,6 +34,7 @@ nunchuk sandbox platform-key enable <sandbox-id>
 Enable platform key for Miniscript:
 ```bash
 nunchuk sandbox platform-key enable <sandbox-id> --slot key_3_0
+nunchuk sandbox platform-key enable <sandbox-id> --slot key_3_0 --slot key_4_0
 ```
 
 Disable platform key:
@@ -134,9 +135,9 @@ nunchuk wallet platform-key update <wallet-id> --policy-json '{
 ## Gotchas
 
 - For multisig wallets, `sandbox platform-key enable` reserves the last key slot for the Nunchuk-held Platform key.
-- For Miniscript wallets, `sandbox platform-key enable` requires one named signer slot from the Miniscript template.
+- For Miniscript wallets, `sandbox platform-key enable` requires at least one named signer slot from the Miniscript template; repeat `--slot` or comma-separate slots for multiple Platform key slots.
 - Miniscript slot names come from the wallet template, for example `key_3_0`.
-- Miniscript support is currently `NATIVE_SEGWIT` only.
+- Miniscript support is currently `NATIVE_SEGWIT` and `TAPROOT`.
 - Platform key signing is asynchronous. After user signatures are added, check transaction status again before expecting a Platform key signature or broadcasting.
 - `sandbox platform-key set-policy` requires Platform key to be enabled first.
 - For existing wallets, submit all per-key policies in one `wallet platform-key update` request. Missing non-platform signers are rejected.

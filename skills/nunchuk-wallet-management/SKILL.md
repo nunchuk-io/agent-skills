@@ -1,6 +1,6 @@
 ---
 name: nunchuk-wallet-management
-description: Inspect and manage existing Nunchuk wallets, including balances, receive addresses, backup/export, recovery, rename, delete, and dummy-transaction approval. Use when the user wants to work with a wallet that has already been created.
+description: Inspect and manage existing Nunchuk wallets, including balances, receive addresses, backup/export, recovery, rename, delete, wallet replacement, and dummy-transaction approval. Use when the user wants to work with a wallet that has already been created.
 ---
 
 # Nunchuk Wallet Management
@@ -82,6 +82,39 @@ Delete a wallet:
 nunchuk wallet delete <wallet-id>
 ```
 
+## Wallet Replacement
+
+Use wallet replacement when the user wants to replace keys or create a replacement sandbox for an existing finalized wallet.
+
+Replacement workflow:
+- If starting the replacement, run `wallet replace create <wallet-id>`.
+- If another participant started it, run `wallet replace list <wallet-id>` and then `wallet replace accept <wallet-id> <group-id>`.
+- Open the replacement sandbox with `sandbox get <group-id>`.
+- Add or replace only the changed signer slots with `sandbox add-key`.
+- Finalize the replacement with `sandbox finalize <group-id>` once every required slot is filled and synced.
+- For Taproot multisig, use `sandbox finalize <group-id> --value-key-set <indexes>` if the user wants to choose the Value Key Set.
+- After finalizing, get a fresh receive address and export a backup if the user wants one.
+
+Create a replacement sandbox:
+```bash
+nunchuk wallet replace create <wallet-id>
+```
+
+List replacement sandboxes:
+```bash
+nunchuk wallet replace list <wallet-id>
+```
+
+Accept and join a replacement sandbox:
+```bash
+nunchuk wallet replace accept <wallet-id> <group-id>
+```
+
+Decline a replacement sandbox locally:
+```bash
+nunchuk wallet replace decline <wallet-id> <group-id>
+```
+
 ## Dummy Transactions
 
 Currently dummy transactions are used to approve Platform key policy changes.
@@ -114,6 +147,7 @@ nunchuk wallet dummy-tx cancel <wallet-id> --dummy-tx-id <id>
 - Use `--json` when the user needs exact machine-readable output.
 - Use `--no-balance` for faster local wallet lookup without Electrum balance fetch.
 - Treat `wallet delete` as destructive and only run it when the user clearly asked for removal.
+- Treat wallet replacement as a sandbox workflow: create or accept the replacement, update signer slots, then finalize.
 
 ## Gotchas
 
@@ -125,4 +159,7 @@ nunchuk wallet dummy-tx cancel <wallet-id> --dummy-tx-id <id>
 - `wallet dummy-tx get` shows the request type, old state, new state, and signature progress.
 - `wallet dummy-tx sign` can use auto-detected stored keys, `--fingerprint`, or `--xprv`.
 - If the recovered wallet already exists locally, the command returns `already_exists` instead of overwriting it.
+- `wallet replace create` starts from the current finalized wallet signer set; if the wallet has a Platform key, that Platform key slot is cleared for replacement and the policy is carried into the sandbox.
+- `wallet replace accept` joins the replacement sandbox and submits unchanged local wallet signers, so only changed slots normally need new keys.
+- `wallet replace decline` records a local decline and does not delete the server-side replacement group.
 - `wallet delete` deletes the wallet from the server and removes the local copy.
