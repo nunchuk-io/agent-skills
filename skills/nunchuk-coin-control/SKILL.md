@@ -22,6 +22,8 @@ nunchuk coin list --wallet <wallet-id> --status CONFIRMED
 nunchuk coin list --wallet <wallet-id> --tag kyc
 nunchuk coin list --wallet <wallet-id> --untagged
 nunchuk coin list --wallet <wallet-id> --collection "Exchange A"
+nunchuk coin list --wallet <wallet-id> --locked
+nunchuk coin list --wallet <wallet-id> --unlocked
 ```
 
 `--status` takes one of:
