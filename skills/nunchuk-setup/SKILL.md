@@ -1,6 +1,6 @@
 ---
 name: nunchuk-setup
-description: Install Nunchuk CLI, authenticate, switch between mainnet and testnet, change Electrum server, and inspect saved config. Use when a command needs login, network, or Electrum setup, or when the user asks to check current auth or config.
+description: Install Nunchuk CLI, authenticate, switch between mainnet and testnet, change Electrum server, set the default fee level, and inspect saved config. Use when a command needs login, network, or Electrum setup, or when the user asks to check current auth or config.
 ---
 
 # Nunchuk Setup
@@ -61,6 +61,17 @@ Reset to the network default:
 ```bash
 nunchuk config electrum reset
 ```
+
+## Configure Default Fee Level
+
+Set the account's default fee level for `tx create` (`economy`, `standard`, or `priority`):
+```bash
+nunchuk config fee-rate get
+nunchuk config fee-rate set priority
+nunchuk config fee-rate reset
+```
+
+See `nunchuk-wallet-transactions` for per-transaction fee options.
 
 ## Inspect
 
