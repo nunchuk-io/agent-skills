@@ -7,7 +7,7 @@ description: Inspect and manage a wallet's coins (UTXOs) - list and filter coins
 
 If auth or network setup is the blocker, use `nunchuk-setup`.
 
-To spend specific coins, spend from a tag, or set change-coin tags, use `nunchuk-wallet-transactions` (`tx create --coin` / `--from-tag` / `--change-tags`).
+To spend specific coins, spend from a tag or collection, or set change-coin tags, use `nunchuk-wallet-transactions` (`tx create --coin` / `--from-tag` / `--from-collection` / `--change-tags`).
 
 ## List Coins
 

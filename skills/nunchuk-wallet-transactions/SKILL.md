@@ -1,6 +1,6 @@
 ---
 name: nunchuk-wallet-transactions
-description: Create, preview, sign, inspect, list, and broadcast Bitcoin transactions, including fee control (manual fee rate, fee levels, subtract fee, send all, anti-fee sniping) and coin selection (spend specific coins, spend from a tag, change-coin tags). Use when the user wants to send funds, preview or adjust fees, choose which coins to spend, sign a transaction, broadcast it, or inspect wallet transaction history.
+description: Create, preview, sign, inspect, list, and broadcast Bitcoin transactions, including fee control (manual fee rate, fee levels, subtract fee, send all, anti-fee sniping) and coin selection (spend specific coins, spend from a tag or collection, change-coin tags). Use when the user wants to send funds, preview or adjust fees, choose which coins to spend, sign a transaction, broadcast it, or inspect wallet transaction history.
 ---
 
 # Nunchuk Wallet Transactions
@@ -91,9 +91,11 @@ Sweep only specific coins:
 nunchuk tx create --wallet <wallet-id> --to <address> --send-all --coin <txid>:<vout>
 ```
 
-Restrict automatic selection to coins carrying a tag:
+Restrict automatic selection to coins carrying a tag, coins in a collection, or both (intersection):
 ```bash
 nunchuk tx create --wallet <wallet-id> --to <address> --amount 100000 --from-tag kyc
+nunchuk tx create --wallet <wallet-id> --to <address> --amount 100000 --from-collection "Exchange A"
+nunchuk tx create --wallet <wallet-id> --to <address> --amount 100000 --from-tag kyc --from-collection "Exchange A"
 ```
 
 Control which tags the change coin inherits (default: all tags of the input coins):
@@ -267,7 +269,8 @@ nunchuk tx sign --wallet <wallet-id> --tx-id <tx-id> --psbt <signed-psbt-base64>
 
 - `--coin` is repeatable and spends **exactly** the listed coins — no subset optimization, no automatic top-up; a shortfall fails with insufficient funds.
 - `--coin` spends a coin even if it is locked; locks only guard automatic selection.
-- `--coin` and `--from-tag` cannot be combined.
+- `--coin` cannot be combined with `--from-tag` or `--from-collection`.
+- `--from-tag` and `--from-collection` given together intersect: only coins matching both qualify.
 - `--send-all` implies `--subtract-fee` and ignores `--amount` (with a warning).
 - `--subtract-fee` is rejected when the amount cannot cover the fee or the reduced output would be dust.
 - `--change-tags` must be `none` or a subset of the tags on the input coins — it copies existing classification, it never invents tags.
