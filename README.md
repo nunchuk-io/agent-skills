@@ -46,7 +46,8 @@ nunchuk auth login
 | [nunchuk-platform-key](./skills/nunchuk-platform-key/SKILL.md) | Configure and inspect Platform key policies on sandboxes and wallets |
 | [nunchuk-coldcard-hsm](./skills/nunchuk-coldcard-hsm/SKILL.md) | Add Coldcard keys, enroll wallets, and sign with Coldcard including HSM mode |
 | [nunchuk-wallet-management](./skills/nunchuk-wallet-management/SKILL.md) | List, inspect, export, rename, replace, recover, and delete finalized wallets |
-| [nunchuk-wallet-transactions](./skills/nunchuk-wallet-transactions/SKILL.md) | Create, sign, inspect, list, and broadcast wallet transactions |
+| [nunchuk-wallet-transactions](./skills/nunchuk-wallet-transactions/SKILL.md) | Create, preview, sign, inspect, list, and broadcast wallet transactions with fee control and coin selection |
+| [nunchuk-coin-control](./skills/nunchuk-coin-control/SKILL.md) | List, lock, and organize coins with tags and collections including automatic rules |
 
 ## Usage
 
@@ -120,4 +121,24 @@ Export a wallet descriptor and BSMS backup
 
 ```text
 Send 100 USD to this address, then sign and broadcast the transaction
+```
+
+```text
+Send everything in my wallet to this address
+```
+
+```text
+Preview the fee before sending, and use a priority fee
+```
+
+```text
+Lock this coin so it is never spent automatically
+```
+
+```text
+Tag my exchange coins and only spend from those
+```
+
+```text
+Quarantine and lock all incoming untagged coins until I review them
 ```
