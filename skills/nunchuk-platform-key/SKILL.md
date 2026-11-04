@@ -138,6 +138,7 @@ nunchuk wallet platform-key update <wallet-id> --policy-json '{
 - For Miniscript wallets, `sandbox platform-key enable` requires at least one named signer slot from the Miniscript template; repeat `--slot` or comma-separate slots for multiple Platform key slots.
 - Miniscript slot names come from the wallet template, for example `key_3_0`.
 - Miniscript support is currently `NATIVE_SEGWIT` and `TAPROOT`.
+- `--auto-broadcast` removes the last human checkpoint: once the required user signatures are uploaded, Nunchuk signs and broadcasts without anyone running `tx broadcast`. When a software key stored on the agent's machine is a co-signer, pair auto-broadcast with a spending limit, and treat `tx sign` as the irreversible step (see the Safety rules in `nunchuk-wallet-transactions`).
 - Platform key signing is asynchronous. After user signatures are added, check transaction status again before expecting a Platform key signature or broadcasting.
 - `sandbox platform-key set-policy` requires Platform key to be enabled first.
 - For existing wallets, submit all per-key policies in one `wallet platform-key update` request. Missing non-platform signers are rejected.

@@ -157,7 +157,7 @@ nunchuk wallet dummy-tx cancel <wallet-id> --dummy-tx-id <id>
 - Export output is raw content, so redirect it to a file when the user wants a backup file.
 - `wallet recover` accepts a descriptor file or a BSMS 1.0 backup file.
 - `wallet dummy-tx get` shows the request type, old state, new state, and signature progress.
-- `wallet dummy-tx sign` can use auto-detected stored keys, `--fingerprint`, or `--xprv`.
+- `wallet dummy-tx sign` can use auto-detected stored keys or `--fingerprint`. Do not pass `--xprv` on the command line (arguments are visible to other processes and recorded in agent transcripts); have the user import the key once with `key import`, then use `--fingerprint`.
 - If the recovered wallet already exists locally, the command returns `already_exists` instead of overwriting it.
 - `wallet replace create` starts from the current finalized wallet signer set; if the wallet has a Platform key, that Platform key slot is cleared for replacement and the policy is carried into the sandbox.
 - `wallet replace accept` joins the replacement sandbox and submits unchanged local wallet signers, so only changed slots normally need new keys.

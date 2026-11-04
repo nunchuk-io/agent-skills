@@ -96,9 +96,10 @@ nunchuk sandbox create --name "My Taproot Miniscript Wallet" \
 
 ## Add keys
 
-Generate a software key on this device and add it by fingerprint to a multisig slot:
+Generate a software key on this device and add it by fingerprint to a multisig slot. `key generate` prints the seed words once, so the **user** runs it in their own terminal and backs the words up; the agent then reads the fingerprint with `key list`:
 ```bash
-nunchuk key generate --name "My key"
+nunchuk key generate --name "My key"   # user runs this: the output contains the seed words
+nunchuk key list                        # agent: pick up <xfp>
 nunchuk sandbox add-key <sandbox-id> --slot 0 --fingerprint <xfp>
 ```
 
@@ -193,7 +194,8 @@ nunchuk sandbox create --name "My Wallet" --m 2 --n 3 --address-type NATIVE_SEGW
 Create a wallet and use a software key stored on this device:
 ```bash
 nunchuk sandbox create --name "My Wallet" --m 2 --n 3 --address-type NATIVE_SEGWIT
-nunchuk key generate
+nunchuk key generate                    # user runs this in their own terminal (prints the seed words)
+nunchuk key list                        # agent: pick up <xfp>
 nunchuk sandbox add-key <sandbox-id> --slot 0 --fingerprint <xfp>
 ```
 
@@ -365,13 +367,16 @@ For static signing-path inspection or satisfiability checks, use `nunchuk-wallet
 - Use `--json` for raw machine-readable output.
 - For plain create requests, prefer a single `sandbox create` command over exploratory checks.
 - If the user already has a local software key, use `nunchuk key list` and `sandbox add-key --fingerprint <xfp>` instead of generating a new one.
-- If the user wants to use a hot key on this device, generate it with `nunchuk key generate` and add it with `sandbox add-key --fingerprint <xfp>`.
+- If the user wants to use a hot key on this device, ask the user to run `nunchuk key generate` in their own terminal, then read the fingerprint with `nunchuk key list` and add it with `sandbox add-key --fingerprint <xfp>`.
 - After finalizing, use `wallet export <wallet-id>` if the user wants a wallet backup.
 - Treat `sandbox delete` as destructive and only run it when the user clearly asked to remove the sandbox.
 
 ## Gotchas
 
 - Mnemonics, seed phrases, and `xprv` values are critical secrets. Anyone with them can control the funds, and losing them may make the funds unrecoverable.
+- Never put a seed phrase or `xprv` on a command line (`key import <words...>`, `key info --mnemonic`, `--xprv`) and never repeat one into the conversation. Command-line arguments are visible to other processes, kept in shell history, and recorded in agent transcripts.
+- `key generate` prints the seed words to stdout. The user runs it, not the agent, so the words never enter the agent's output or transcript. The agent continues with `key list` and `--fingerprint <xfp>`.
+- `key import` takes the seed words as arguments. The user runs it in their own terminal; the agent never asks for the words.
 - Derivation paths may use either `h` or `'`; prefer `h`.
 - `key generate` stores the software key on the current device for the current user and network.
 - `sandbox add-key --fingerprint <xfp>` is the simplest way to use a locally stored software key.

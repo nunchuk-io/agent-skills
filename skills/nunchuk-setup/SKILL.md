@@ -17,24 +17,20 @@ Make sure `nunchuk` is on `PATH`.
 
 Get an API key from https://developer.nunchuk.io/ first.
 
-Interactive login:
-```bash
-nunchuk auth login
-```
+The API key is a secret: it grants full access to the user's Nunchuk account. It must never appear on a command line, in the conversation, or in the agent's output. Login is a step the **user** performs, not the agent.
 
-Non-interactive login:
-```bash
-nunchuk auth login --api-key <api-secret-key>
-```
+1. Ask the user to run the login in their own terminal and type the key at the masked prompt. If the agent runtime offers a way for the user to run a command themselves without the agent seeing its input, point them to it.
+   ```bash
+   nunchuk auth login
+   ```
+2. Verify from the agent side:
+   ```bash
+   nunchuk auth status
+   ```
 
-`auth login` supports both the interactive prompt and `--api-key <api-secret-key>`.
+Never run `nunchuk auth login --api-key <key>` and never ask the user to paste the key into the chat. Command-line arguments are visible to every process on the machine (`ps`, `/proc/<pid>/cmdline`), are kept in shell history, and are recorded verbatim in agent transcripts.
 
-If the agent is executing the command itself, prefer:
-```bash
-nunchuk auth login --api-key <api-secret-key>
-```
-
-Use plain `nunchuk auth login` when the user is running the command manually and will enter the key in the prompt.
+Unattended use (CI, scheduled jobs): after a one-time interactive login on that machine, `NUNCHUK_API_KEY` in the environment overrides the stored key for every command. Inject it from a secrets manager; do not write it inline on the command line (`NUNCHUK_API_KEY=... nunchuk ...`), which exposes it the same way a flag does.
 
 ## Configure Network
 
