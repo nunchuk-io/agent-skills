@@ -23,7 +23,7 @@ Progress:
 - Add the key to the wallet with `nunchuk sandbox add-key --descriptor`.
 - Create the wallet and export the descriptor to a file.
 - Enroll it on the Coldcard with `ckcc upload <descriptor-file> --miniscript`.
-- Sign a transaction with `nunchuk tx get --wallet <wallet-id> --tx-id <txid> --json | jq -r .psbt > <txid.psbt>`, `ckcc sign --base64 <txid.psbt>`, and `nunchuk tx sign --psbt <signed-psbt-base64>`.
+- Sign a transaction with `nunchuk tx get --wallet <wallet-id> --tx-id <txid> --json | jq -r .psbt > <txid.psbt>`, `ckcc sign --base64 <txid.psbt>`, and `nunchuk tx sign --psbt <signed-psbt-base64>` (or `nunchuk tx import --wallet <wallet-id> --file <txid-signed.psbt>` to import the signed file directly).
 
 Export a mainnet account descriptor:
 ```bash
@@ -90,7 +90,7 @@ Progress:
 - Confirm the active policy on the Coldcard screen.
 - Check status with `ckcc hsm`.
 - Authorize transactions with `ckcc auth <user>` for TOTP or `ckcc auth <user> -p` for password if the active policy requires user authorization.
-- Sign transactions with `ckcc sign --base64 <tx.psbt>` so the result can be passed to `nunchuk tx sign --psbt`.
+- Sign transactions with `ckcc sign --base64 <tx.psbt>` so the result can be passed to `nunchuk tx sign --psbt`, or imported as a file with `nunchuk tx import --file`.
 
 Unrestricted `policy.json`:
 ```json
