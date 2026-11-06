@@ -103,6 +103,8 @@ nunchuk key list                        # agent: pick up <xfp>
 nunchuk sandbox add-key <sandbox-id> --slot 0 --fingerprint <xfp>
 ```
 
+From `nunchuk-cli` 0.2.3, `key generate` refuses to run when its output is captured, which is always the case when the agent runs it. The error suggests `--show-mnemonic`. Do not add that flag: it would put the seed words into the agent's output. Hand the command to the user instead.
+
 Reuse an existing software key on this device:
 ```bash
 nunchuk key list
@@ -376,11 +378,12 @@ For static signing-path inspection or satisfiability checks, use `nunchuk-wallet
 - Mnemonics, seed phrases, and `xprv` values are critical secrets. Anyone with them can control the funds, and losing them may make the funds unrecoverable.
 - Never put a seed phrase or `xprv` on a command line (`key import <words...>`, `key info --mnemonic`, `--xprv`) and never repeat one into the conversation. Command-line arguments are visible to other processes, kept in shell history, and recorded in agent transcripts.
 - `key generate` prints the seed words to stdout. The user runs it, not the agent, so the words never enter the agent's output or transcript. The agent continues with `key list` and `--fingerprint <xfp>`.
-- `key import` takes the seed words as arguments. The user runs it in their own terminal; the agent never asks for the words.
+- `key import` is run by the user in their own terminal; the agent never asks for the words. On `nunchuk-cli >= 0.2.3` the user runs `nunchuk key import` with no words and types them at the masked prompt, or passes `--file <path>`; both keep the words out of shell history. On 0.2.2 the words are command-line arguments.
 - Derivation paths may use either `h` or `'`; prefer `h`.
 - `key generate` stores the software key on the current device for the current user and network.
 - `sandbox add-key --fingerprint <xfp>` is the simplest way to use a locally stored software key.
 - For hardware keys, HWI can help export a descriptor to add here: https://github.com/bitcoin-core/HWI/releases
 - Miniscript support requires `nunchuk-cli >= 0.1.2`.
+- The `key generate` output guard and the `key import` prompt / `--stdin` / `--file` forms require `nunchuk-cli >= 0.2.3`. Never work around the guard with `--show-mnemonic`.
 - Finalize only after every required slot is filled and synced.
 - Accounts may have a limit on wallets or sandboxes. If creation fails because of that, ask whether to delete unused wallets or sandboxes, and only run delete after the user confirms.

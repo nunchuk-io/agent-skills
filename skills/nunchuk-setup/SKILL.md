@@ -30,7 +30,9 @@ The API key is a secret: it grants full access to the user's Nunchuk account. It
 
 Never run `nunchuk auth login --api-key <key>` and never ask the user to paste the key into the chat. Command-line arguments are visible to every process on the machine (`ps`, `/proc/<pid>/cmdline`), are kept in shell history, and are recorded verbatim in agent transcripts.
 
-Unattended use (CI, scheduled jobs): after a one-time interactive login on that machine, `NUNCHUK_API_KEY` in the environment overrides the stored key for every command. Inject it from a secrets manager; do not write it inline on the command line (`NUNCHUK_API_KEY=... nunchuk ...`), which exposes it the same way a flag does.
+Unattended use (CI, scheduled jobs): provide `NUNCHUK_API_KEY` in the environment from a secrets manager. From `nunchuk-cli` 0.2.3 every command, including `nunchuk auth login`, honours it, so the one-time login can run without a keyboard. On 0.2.2 `auth login` must be done once at a terminal; the variable then overrides the stored key for the other commands. Do not write the key inline on the command line (`NUNCHUK_API_KEY=... nunchuk ...`), which exposes it the same way a flag does.
+
+Operators who want every irreversible step to be explicit in the command itself can set `NUNCHUK_REQUIRE_YES=1` (nunchuk-cli >= 0.2.3). The CLI then refuses `tx sign` and `tx broadcast` unless `--yes` is passed; see `nunchuk-wallet-transactions` for when the agent may pass it.
 
 ## Configure Network
 
@@ -80,3 +82,7 @@ Inspect saved config/network:
 ```bash
 nunchuk config show
 ```
+
+## Versions
+
+Check the installed version with `nunchuk --version`. These need `nunchuk-cli >= 0.2.3`: `auth login` reading `NUNCHUK_API_KEY`, `auth login --api-key-stdin`, `key import` with a masked prompt or `--stdin` / `--file`, the `key generate` output guard, and `--yes` on `tx sign` / `tx broadcast`. Batch payments and `tx import` need `>= 0.2.2`; Miniscript needs `>= 0.1.2`.
